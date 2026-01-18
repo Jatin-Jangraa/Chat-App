@@ -105,7 +105,7 @@ export const AuthProvider =  ({children}: {children : React.ReactNode}) => {
 
     if(!userdata || socket?.connected) return ;
 
-    const newsocket : any = io("http://localhost:4000/",{
+    const newsocket : any = io(`${import.meta.env.VITE_BACKEND_SERVER}`,{
       query : {
         userId  : userdata._id
       }
