@@ -32,7 +32,7 @@ export const signup = async (req, res) => {
         });
         await newUser.save();
         const token = generateToken(newUser._id.toString());
-        return res.status(201).cookie("token", token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60e3 }).json({ user: newUser });
+        return res.status(201).cookie("accessToken", token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60e3 }).json({ user: newUser });
     }
     catch (error) {
         return res.status(500).json({ message: "Internal Server Error" });

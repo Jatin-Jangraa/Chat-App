@@ -9,6 +9,7 @@ const SideBar = () => {
     const {setselecteduser,selecteduser, chatusers, getusers,  unseenMessages} = useChat()
 
     const {logout , onlineusers} = useAuth()
+    const [open, setOpen] = useState(false);
 
     const [search  , setsearch] = useState<string>()
 
@@ -29,14 +30,51 @@ const SideBar = () => {
             <div className='pb-5 flex flex-col gap-5'>
                 <div className='flex justify-between items-center'>
                     <img src={assets.logo} alt="logo" className='max-w-40' />
-                    <div className="relative py-2 group">
+                    {/* <div className="relative py-2 group">
                         <img src={assets.menu_icon} alt="Menu" className='max-h-5
 cursor-pointer' />
                         <div className='absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100 hidden group-hover:block'>
                             <p onClick={() => Navigate('/profile')} className='cursor-pointer text-sm'>Edit Profile</p>
                             <hr className="my-2 border-t border-gray-500" /> <p onClick={() => logout()} className='cursor-pointer text-sm'>Logout</p>
                         </div>
-                    </div>
+                    </div> */}
+                     <div className="flex justify-between items-center">
+
+      <div className="relative">
+        <img
+          src={assets.menu_icon}
+          alt="Menu"
+          className="max-h-5 cursor-pointer"
+          onClick={() => setOpen(!open)}
+        />
+
+        {open && (
+          <div className="absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100">
+            <p
+              onClick={() => {
+                Navigate("/profile");
+                setOpen(false);
+              }}
+              className="cursor-pointer text-sm"
+            >
+              Edit Profile
+            </p>
+
+            <hr className="my-2 border-t border-gray-500" />
+
+            <p
+              onClick={() => {
+                logout();
+                setOpen(false);
+              }}
+              className="cursor-pointer text-sm"
+            >
+              Logout
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
                 </div>
 
                 <div className='flex  bg-[#282142] rounded-full items-center gap-2 py-3 px-5 '>

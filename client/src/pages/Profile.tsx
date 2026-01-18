@@ -3,13 +3,14 @@ import type { userinfo } from './Login'
 import { useAuth } from '../Context/AuthContect'
 import api from '../Api/Axios'
 import Loader from '../components/Loader'
+import assets from '../assets/assets'
 
 const Profile = () => {
 
   const {user , restoreuser} = useAuth()
 
   const [selectedimage,setselectediamge] =useState<any>(null)
-  const [previewimage , setpreviewimage] = useState<string>(user?.avatar || "")
+  const [previewimage , setpreviewimage] = useState<string>(user?.avatar || assets.avatar_icon)
   const [changeIamge  , setchangeIamge] = useState<boolean>(false)
   const [loading , setloading] = useState<boolean>(false)
   const [userinfo , setuserimfo] = useState<userinfo>(user || {})
