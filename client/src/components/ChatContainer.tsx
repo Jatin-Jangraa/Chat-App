@@ -12,6 +12,12 @@ const ChatContainer = () => {
 
   const {selecteduser , setselecteduser , messages, sendmessage , getmessages} = useChat()
   console.log(messages);
+
+    useEffect(() => {
+  return () => {
+    setselecteduser(null);
+  };
+}, []);
   
   const {user , onlineusers} = useAuth()
 

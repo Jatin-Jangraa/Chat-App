@@ -5,7 +5,6 @@ import cloudinary from "../config/cloudinary.js";
 import { io, userSocketMap } from "../index.js";
 import type { AuthRequest } from "../middlewares/Auth.Middleware.js";
 import mongoose, { Types } from "mongoose";
-import { log } from "console";
 
 
 

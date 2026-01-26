@@ -52,6 +52,12 @@ export const ChatProvider = ({children}: {children: React.ReactNode}) => {
                const res =  await api.get(`/api/message/${userId}`)
                setmessages(res.data)
 
+               setunseenMessages((prev:any)=>{
+                const updated = {...prev}
+                delete updated[userId]
+                return updated
+               })
+
             } catch (error) {
                 const message = (error as any).response?.data?.message || " failed"
                 alert(message)

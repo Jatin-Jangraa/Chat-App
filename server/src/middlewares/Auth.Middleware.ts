@@ -14,7 +14,11 @@ export const Protect = async (req:AuthRequest , res :Response , next : NextFunct
 
     try {
         
-         const token  = req.cookies.accessToken;
+         let token = req.cookies?.accessToken;
+
+    if (!token && req.headers.authorization) {
+      token = req.headers.authorization.split(" ")[1];
+    }
          
         if(!token) return res.sendStatus(401)
 
