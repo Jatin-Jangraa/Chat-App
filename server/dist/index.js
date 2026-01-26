@@ -47,11 +47,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/user", userroute);
 app.use("/api/message", msgrouter);
-app.use(/.*/, (req, res) => {
-    res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
-});
 app.get("/health", (req, res) => {
     res.status(200).send("OK");
+});
+app.use(/.*/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
 });
 server.listen(port, () => {
     console.log(`Server is Running on Port : ${port}`);

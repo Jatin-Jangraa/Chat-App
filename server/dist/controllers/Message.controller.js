@@ -3,7 +3,6 @@ import { Message } from "../models/Message.model.js";
 import cloudinary from "../config/cloudinary.js";
 import { io, userSocketMap } from "../index.js";
 import mongoose, { Types } from "mongoose";
-import { log } from "console";
 export const listofusers = async (req, res) => {
     try {
         const userId = req.user.userid;
