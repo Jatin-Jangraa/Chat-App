@@ -28,11 +28,18 @@ export const ChatProvider = ({children}: {children: React.ReactNode}) => {
 
     const  {socket} = useAuth()
 
+    const token = localStorage.getItem("accessToken")
+
 
         const getusers = async () =>{
+
             try {
                 
-             const users = await api.get("/api/message/users")
+             const users = await api.get("/api/message/users",{
+                 headers:{
+          Authorization : `Bearer ${token}`
+        }
+             })
 
              setchatusers(users.data.allusers)
                 setunseenMessages(users.data.unseenmessages)
@@ -49,7 +56,11 @@ export const ChatProvider = ({children}: {children: React.ReactNode}) => {
 
             try {
                 
-               const res =  await api.get(`/api/message/${userId}`)
+               const res =  await api.get(`/api/message/${userId}`,{
+                 headers:{
+          Authorization : `Bearer ${token}`
+        }
+               })
                setmessages(res.data)
 
                setunseenMessages((prev:any)=>{
@@ -72,7 +83,14 @@ export const ChatProvider = ({children}: {children: React.ReactNode}) => {
         const sendmessage = async (formdata: FormData) =>{
             try {
                 
-                const res = await api.post(`/api/message/send/${selecteduser._id}`, formdata)
+              const res = await api.post(
+  `/api/message/send/${selecteduser._id}`,
+  formdata,
+  {headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
                 if(res){
                     setmessages((prev) => [...prev , res.data])
                 }

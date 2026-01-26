@@ -32,7 +32,9 @@ export const signup = async (req, res) => {
         });
         await newUser.save();
         const token = generateToken(newUser._id.toString());
-        return res.status(201).cookie("accessToken", token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60e3 }).json({ user: newUser, accessToken: token });
+        return res.status(201)
+            // .cookie("accessToken", token, {...cookieOptions,maxAge:7 * 24 * 60 * 60e3})
+            .json({ user: newUser, accessToken: token });
     }
     catch (error) {
         return res.status(500).json({ message: "Internal Server Error" });
@@ -53,7 +55,9 @@ export const signin = async (req, res) => {
             return res.status(401).json({ message: "Invalid credentials" });
         }
         const token = generateToken(existingUser._id.toString());
-        return res.status(200).cookie("accessToken", token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60e3 }).json({ user: existingUser, accessToken: token });
+        return res.status(200)
+            // .cookie("accessToken", token, {...cookieOptions,maxAge:7 * 24 * 60 * 60e3})
+            .json({ user: existingUser, accessToken: token });
     }
     catch (error) {
         return res.status(500).json({ message: "Internal Server Error" });

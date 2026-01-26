@@ -56,8 +56,11 @@ export const AuthProvider =  ({children}: {children : React.ReactNode}) => {
                setloading(true)  
                const res = await api.post("/api/user/signin",data)
                setuser(res.data.user)
+               localStorage.setItem("accessToken",res.data.accessToken)
+              //  connectSocket(res.data.user)
                setloading(false)
-               return user
+              //  return user
+              restoreuser()
               
              } catch (error) {
                setloading(false)
@@ -70,8 +73,13 @@ export const AuthProvider =  ({children}: {children : React.ReactNode}) => {
 
   const restoreuser = async () => {
     try {
+      const token = localStorage.getItem("accessToken")
       setloading(true)
-      const res = await api.get("/api/user/getme")
+      const res = await api.get("/api/user/getme",{
+        headers:{
+          Authorization : `Bearer ${token}`
+        }
+      })
       console.log(res.data);
       setuser(res.data)
       connectSocket(res.data)
@@ -88,7 +96,9 @@ export const AuthProvider =  ({children}: {children : React.ReactNode}) => {
   const logout = async () => {
     try {
       setloading(true)
-      await api.get("/api/user/logout")
+      localStorage.removeItem("accessToken")
+      // await api.get("/api/user/logout")
+      socket?.disconnect()
       setuser(null)
       setloading(false)
     }

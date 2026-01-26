@@ -36,12 +36,12 @@ const Login = () => {
       resetform()
     }else{
       try {
-             await api.post("/api/user/signup",userinfo,{
+            const res = await api.post("/api/user/signup",userinfo,{
               headers:{
                 'Content-Type': 'multipart/form-data'
               }
             })
-            
+            localStorage.setItem("accessToken",res.data.accessToken)
             restoreuser()
             Navigate("/")
             resetform()

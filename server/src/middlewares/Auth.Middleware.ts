@@ -14,11 +14,19 @@ export const Protect = async (req:AuthRequest , res :Response , next : NextFunct
 
     try {
         
-         let token = req.cookies?.accessToken;
+        //  let token = req.cookies?.accessToken;
 
-    if (!token && req.headers.authorization) {
-      token = req.headers.authorization.split(" ")[1];
-    }
+        const authheader = req.headers.authorization;
+
+        if(!authheader && !authheader?.startsWith("Bearer")){
+            return res.sendStatus(401)
+        }
+
+        const token = authheader.split(' ')[1]
+
+    // if (!token && req.headers.authorization) {
+    //   token = req.headers.authorization.split(" ")[1];
+    // }
          
         if(!token) return res.sendStatus(401)
 
