@@ -102,7 +102,7 @@ const ChatContainer = () => {
           </label>
          {image && <label className="text-white"><TiTick/></label>}
         </div>
-      <img src={assets.send_button} onClick={handleSendMessage} alt=""  className="w-7"/>
+      <img  src={assets.send_button} onClick={handleSendMessage} alt=""  className="w-7 cursor-pointer"/>
       </div>
 
     </div>
