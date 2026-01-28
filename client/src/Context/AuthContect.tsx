@@ -29,18 +29,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [onlineusers, setonlineusers] = useState<string[]>([]);
   const [socket, setsocket] = useState<any>(null);
 
+  // 🔔 Ask notification permission ONCE
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
   useEffect(() => {
     restoreuser();
   }, []);
 
-  // 🔥 Disconnect socket when tab/browser closes
+  // 🔥 Disconnect socket when tab closes
   useEffect(() => {
     if (!socket) return;
 
-    const handleUnload = () => {
-      socket.disconnect()
-    };
-
+    const handleUnload = () => socket.disconnect();
     window.addEventListener("beforeunload", handleUnload);
 
     return () => {

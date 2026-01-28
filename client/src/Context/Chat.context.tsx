@@ -1,6 +1,11 @@
-import React, { createContext,  useEffect } from "react";
-import { useAuth } from "./AuthContect";
+import React, {
+  createContext,
+  useEffect,
+  useCallback,
+  useState,
+} from "react";
 import api from "../Api/Axios";
+import { useAuth } from "./AuthContect";
 
 export interface IMessage {
   _id: string;
@@ -12,154 +17,136 @@ export interface IMessage {
   createdAt: string;
 }
 
-
-
 const ChatContext = createContext<any | null>(null);
 
+export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
+  const [messages, setmessages] = useState<IMessage[]>([]);
+  const [chatusers, setchatusers] = useState<any[]>([]);
+  const [selecteduser, setselecteduser] = useState<any>(null);
+  const [unseenMessages, setunseenMessages] = useState<any>({});
 
+  const { socket } = useAuth();
+  const token = localStorage.getItem("accessToken");
 
-export const ChatProvider = ({children}: {children: React.ReactNode}) => {  
+  // 🔊 Notification sound
+  const notificationSound = new Audio("/sound.mp3");
 
-    const [messages , setmessages] =React.useState<IMessage[]>([])
-    const [chatusers , setchatusers] = React.useState<any[]>([])
-    const [selecteduser , setselecteduser] = React.useState<any>(null)
-    const [unseenMessages , setunseenMessages] = React.useState<any>({})
+  // 🔔 Desktop notification + sound + open chat
+  const showDesktopNotification = (message: IMessage) => {
+    if (
+      Notification.permission === "granted" &&
+      document.hidden
+    ) {
+      // 🔊 Play sound
+      notificationSound.currentTime = 0;
+      notificationSound.play().catch(() => {});
 
+      new Notification("New Message", {
+        body: message.text || "You received a message",
+        icon: "/chat.png",
+      });
 
-    const  {socket} = useAuth()
-
-    const token = localStorage.getItem("accessToken")
-
-
-        const getusers = async () =>{
-
-            try {
-                
-             const users = await api.get("/api/message/users",{
-                 headers:{
-          Authorization : `Bearer ${token}`
-        }
-             })
-
-             setchatusers(users.data.allusers)
-                setunseenMessages(users.data.unseenmessages)
-
-            } catch (error) {
-                  const message = (error as any).response?.data?.message || " failed"
-                  alert(message)
-            }
-        }
-
-
-
-        const getmessages = async (userId : string) =>{
-
-            try {
-                
-               const res =  await api.get(`/api/message/${userId}`,{
-                 headers:{
-          Authorization : `Bearer ${token}`
-        }
-               })
-               setmessages(res.data)
-
-               setunseenMessages((prev:any)=>{
-                const updated = {...prev}
-                delete updated[userId]
-                return updated
-               })
-
-            } catch (error) {
-                const message = (error as any).response?.data?.message || " failed"
-                alert(message)
-            }   
-
-        }
-
-
-
-
-
-        const sendmessage = async (formdata: FormData) =>{
-            try {
-                
-              const res = await api.post(
-  `/api/message/send/${selecteduser._id}`,
-  formdata,
-  {headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-);
-                if(res){
-                    setmessages((prev) => [...prev , res.data])
-                }
-
-            } catch (error) {
-                const message = (error as any).response?.data?.message || " failed"
-                alert(message)
-            }
-      }
-
-
-        // const subscribeToNewMessages = React.useCallback(() => {
-        //     if (!socket) return;
-
-        //     socket.on("newMessage", (newMessage: any) => {
-        //         if(selecteduser && newMessage.senderId === selecteduser._id){
-        //             newMessage.seen = true;
-        //             setmessages((prev) => [...prev, newMessage]);
-        //             api.put(`/api/message/mark/${newMessage._id}`);
-        //         }else{
-        //             setunseenMessages((prev: any) =>({
-        //                 ...prev , [newMessage.senderId]: (prev[newMessage.senderId] || 0) + 1
-        //         }));    
-        //     }});
-        // }, [socket]);   
-        
-
-
-        const subscribeToNewMessages = React.useCallback(() => {
-  if (!socket) return;
-
-  socket.on("newMessage", (newMessage: any) => {
-    if (selecteduser && newMessage.senderId === selecteduser._id) {
-      newMessage.seen = true;
-      setmessages(prev => [...prev, newMessage]);
-      api.put(`/api/message/mark/${newMessage._id}`);
-    } else {
-      setunseenMessages((prev : any) => ({
-        ...prev,
-        [newMessage.senderId]: (prev[newMessage.senderId] || 0) + 1
-      }));
+     
     }
-  });
-}, [socket, selecteduser]);
+  };
 
+  const getusers = async () => {
+    try {
+      const users = await api.get("/api/message/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
+      setchatusers(users.data.allusers);
+      setunseenMessages(users.data.unseenmessages);
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Failed");
+    }
+  };
 
-        const unscribeFromNewMessages = () => {
-            if (socket) socket.off("newMessage");
-        }
+  const getmessages = async (userId: string) => {
+    try {
+      const res = await api.get(`/api/message/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        // useEffect(() => {
-        //     subscribeToNewMessages();
-        //     return () => {
-        //         unscribeFromNewMessages();
-        //     };
-        // }, [socket , selecteduser]);
+      setmessages(res.data);
 
-        useEffect(() => {
-        subscribeToNewMessages();
-        return unscribeFromNewMessages;
-        }, [subscribeToNewMessages]);
+      setunseenMessages((prev: any) => {
+        const updated = { ...prev };
+        delete updated[userId];
+        return updated;
+      });
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Failed");
+    }
+  };
 
-        return (
-        <ChatContext.Provider value={{messages , setmessages , chatusers , setchatusers , getusers , getmessages , sendmessage , selecteduser , setselecteduser , unseenMessages , setunseenMessages}}>
-            {children}
-        </ChatContext.Provider>
-    )
-}   
+  const sendmessage = async (formdata: FormData) => {
+    try {
+      const res = await api.post(
+        `/api/message/send/${selecteduser._id}`,
+        formdata,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
+      if (res) setmessages(prev => [...prev, res.data]);
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Failed");
+    }
+  };
+
+  // 🔥 Socket listener
+  const subscribeToNewMessages = useCallback(() => {
+    if (!socket) return;
+
+    socket.on("newMessage", (newMessage: IMessage) => {
+      // Chat already open
+      if (selecteduser && newMessage.senderId === selecteduser._id) {
+        newMessage.seen = true;
+        setmessages(prev => [...prev, newMessage]);
+        api.put(`/api/message/mark/${newMessage._id}`);
+      } 
+      // Background → notify
+      else {
+        showDesktopNotification(newMessage);
+
+        setunseenMessages((prev: any) => ({
+          ...prev,
+          [newMessage.senderId]:
+            (prev[newMessage.senderId] || 0) + 1,
+        }));
+      }
+    });
+  }, [socket, selecteduser]);
+
+  const unsubscribeFromNewMessages = () => {
+    if (socket) socket.off("newMessage");
+  };
+
+  useEffect(() => {
+    subscribeToNewMessages();
+    return unsubscribeFromNewMessages;
+  }, [subscribeToNewMessages]);
+
+  return (
+    <ChatContext.Provider
+      value={{
+        messages,
+        setmessages,
+        chatusers,
+        setchatusers,
+        getusers,
+        getmessages,
+        sendmessage,
+        selecteduser,
+        setselecteduser,
+        unseenMessages,
+        setunseenMessages,
+      }}
+    >
+      {children}
+    </ChatContext.Provider>
+  );
+};
 
 export const useChat = () => React.useContext(ChatContext);
