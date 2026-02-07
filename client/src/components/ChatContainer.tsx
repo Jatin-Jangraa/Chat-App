@@ -6,7 +6,6 @@ import { Time } from "../Utils/Date"
 import { useChat } from "../Context/Chat.context"
 import { useAuth } from "../Context/AuthContect"
 import { TiTick } from "react-icons/ti";
-import Loader from "./Loader"
 
 
 
