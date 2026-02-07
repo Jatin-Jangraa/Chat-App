@@ -6,11 +6,17 @@ import { Time } from "../Utils/Date"
 import { useChat } from "../Context/Chat.context"
 import { useAuth } from "../Context/AuthContect"
 import { TiTick } from "react-icons/ti";
+import Loader from "./Loader"
+
+
+
+
+
 const ChatContainer = () => {
 
   const scrollend = useRef<HTMLDivElement | null>(null)
 
-  const {selecteduser , setselecteduser , messages, sendmessage , getmessages} = useChat()
+  const {selecteduser , setselecteduser,loading , messages, sendmessage , getmessages} = useChat()
   console.log(messages);
 
     useEffect(() => {
@@ -78,10 +84,10 @@ const ChatContainer = () => {
            className={`flex items-end gap-2 justify-end ${msg.senderId !== user?._id && "flex-row-reverse"}`}
            >
             {msg.image ? (
-              <img src={msg.image} className="max-w-57.5 border border-gray-700 rounded-lg overflow-hidden mb-8" />
+              <img onClick={()=>{ window.open(msg.image, "_blank", "noopener,noreferrer");}} src={msg.image} className="cursor-pointer max-w-57.5 border border-gray-700 rounded-lg overflow-hidden mb-8" />
             ) : <p className={`p-2 max-w-50 md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${msg.senderId === user?._id ? "rounded-br-none" : "rounded-bl-none"}`}>{msg.text}</p>}
             <div className="text-center text-xs">
-              {<img src={msg.senderId === user?._id ? user?.avatar || assets.avatar_icon : selecteduser.avatar ||  assets.avatar_icon} alt="" className="w-7 rounded-full" />}
+              {<img  src={msg.senderId === user?._id ? user?.avatar || assets.avatar_icon : selecteduser.avatar ||  assets.avatar_icon} alt="" className="w-7 rounded-full" />}
               {<p className="text-gray-500">{Time(msg.createdAt)}</p>}
             </div>
           </div>
@@ -102,7 +108,17 @@ const ChatContainer = () => {
           </label>
          {image && <label className="text-white"><TiTick/></label>}
         </div>
+        {!loading ?
       <img  src={assets.send_button} onClick={handleSendMessage} alt=""  className="w-7 cursor-pointer"/>
+     : <div className="h-full w-auto p-2 items-center justify-center bg-purple-900 rounded-full">
+         <div className=" inset-0 z-50 flex items-center justify-center bg-purple-900">
+      <div
+        className="h-4 w-4 animate-spin rounded-full border-4 border-purple-900 border-t-blue-500"
+        role="status"
+        aria-label="Loading"
+      />
+    </div>
+      </div>}
       </div>
 
     </div>
