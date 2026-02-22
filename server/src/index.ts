@@ -22,7 +22,7 @@ const __dirname = path.dirname(__filename);
 
 // 🌐 Middlewares
 app.use(cors({
-  origin: "*",
+  origin: "https://chat-app-37ky.onrender.com/",
   credentials: true,
 }));
 app.use(cookieParser());
