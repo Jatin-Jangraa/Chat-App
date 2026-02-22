@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const connectSocket = (userdata: IUser) => {
     if (!userdata || socket?.connected) return;
 
-    const newSocket = io(import.meta.env.VITE_BACKEND_SERVER, {
+    const newSocket = io("https://chat-app-37ky.onrender.com", {
       query: { userId: userdata._id },
       transports: ["websocket"],
     });
