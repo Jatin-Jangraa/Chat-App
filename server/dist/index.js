@@ -9,6 +9,7 @@ import { userroute } from "./routes/User.js";
 import msgrouter from "./routes/Message.route.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import process from "process";
 dotenv.config();
 connectdb();
 const app = express();
@@ -18,7 +19,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // 🌐 Middlewares
 app.use(cors({
-    origin: "https://chat-app-37ky.onrender.com/",
+    // origin: "https://chat-app-37ky.onrender.com",
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true,
 }));
 app.use(cookieParser());
@@ -28,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../../client/dist")));
 // 🔥 Socket.IO with FAST timeout
 export const io = new Server(server, {
-    cors: { origin: "*" },
+    cors: { origin: process.env.FRONTEND_URL || "http://localhost:5173", credentials: true },
     pingTimeout: 5000,
     pingInterval: 2000,
 });
