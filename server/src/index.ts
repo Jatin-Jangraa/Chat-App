@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
+// import cookieParser from "cookie-parser";
 import http from "http";
 import { Server } from "socket.io";
 import { connectdb } from "./config/dbconfig.js";
@@ -24,9 +24,9 @@ const __dirname = path.dirname(__filename);
 // 🌐 Middlewares
 app.use(cors({
   origin: ["https://chat-app-37ky.onrender.com", "http://localhost:5173"],
-  credentials: true,
+  // credentials: true,
 }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -35,7 +35,9 @@ app.use(express.static(path.join(__dirname, "../../client/dist")));
 
 // 🔥 Socket.IO with FAST timeout
 export const io = new Server(server, {
-  cors: { origin: ["https://chat-app-37ky.onrender.com", "http://localhost:5173"], credentials: true },
+  cors: { origin: ["https://chat-app-37ky.onrender.com", "http://localhost:5173"], 
+    // credentials: true
+   },
   pingTimeout: 5000,
   pingInterval: 2000,
 });
